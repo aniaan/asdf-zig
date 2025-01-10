@@ -1,14 +1,17 @@
+import shutil
 import sys
 from pathlib import Path
-import shutil
+
+from packaging import version
 
 parent_dir = Path(__file__).parent.parent.parent
 if str(parent_dir) not in sys.path:
     sys.path.insert(0, str(parent_dir))
 
-from lib.lib import Plugin, verify_by_minisign, FormatKwargs
+from lib.lib import FormatKwargs, Plugin, verify_by_minisign
 
 _PUBLIC_KEY = "RWSGOq2NVecA2UPNdBUZykf1CCb147pkmdtYxgb3Ti+JO/wCYvhbAb/U"
+
 
 def _copy(plugin: Plugin, src: Path, dst: Path, format_kwargs: FormatKwargs):
     src = src / Path(f"{format_kwargs['filename'].rstrip('.tar.xz')}").name
@@ -38,4 +41,5 @@ PLUGIN = Plugin(
         format_kwargs=format_kwargs,
     ),
     custom_copy=_copy,
+    sort_version_key=lambda x: version.parse(x["tag_name"].lstrip("v")),
 )
